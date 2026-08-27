@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interbank · Reporte Evento Factoring · SCF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#06231a;
+    --ink-2:#0a3226;
+    --green-deep:#083b26;
+    --green-primary:#00a651;
+    --green-mid:#0c7a45;
+    --green-bright:#7fe6a6;
+    --green-acid:#c8ff9e;
+    --paper:#f4f6f2;
+    --paper-2:#ffffff;
+    --line:rgba(6,35,26,0.12);
+    --line-light:rgba(244,246,242,0.18);
+    --text-dark:#0a1f16;
+    --text-mute:#4a5f54;
+    --text-light:#eaf3ec;
+    --text-light-mute:#a9c4b6;
+    --radius:14px;
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--text-dark);font-family:var(--font-body);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  ::selection{background:var(--green-acid);color:var(--ink);}
+  a{color:inherit;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 32px;}
+  @media (max-width:700px){ .wrap{padding:0 20px;} }
+
+  .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;display:flex;align-items:center;gap:10px;}
+  .eyebrow::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block;flex-shrink:0;}
+  h1,h2,h3{font-family:var(--font-display);margin:0;letter-spacing:-0.01em;}
+
+  .reveal{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.16,.8,.3,1), transform .7s cubic-bezier(.16,.8,.3,1);}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;background:radial-gradient(ellipse 900px 500px at 15% -10%, rgba(127,230,166,0.16), transparent 60%),radial-gradient(ellipse 700px 500px at 100% 0%, rgba(0,166,81,0.22), transparent 55%),linear-gradient(180deg, var(--ink) 0%, var(--ink-2) 100%);color:var(--text-light);padding:36px 0 80px;border-bottom:1px solid var(--line-light);}
+  .hero-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:52px;color:var(--text-light-mute);}
+  .brandmark{display:flex;align-items:center;gap:10px;color:var(--text-light);}
+  .brandmark .sq{width:22px;height:22px;border-radius:6px;background:var(--green-primary);position:relative;}
+  .brandmark .sq::after{content:'';position:absolute;inset:6px;background:var(--ink);border-radius:2px;}
+  .brandmark span{font-family:var(--font-display);font-weight:600;font-size:15px;letter-spacing:0.01em;}
+  .folio{font-family:var(--font-mono);font-size:11px;border:1px dashed rgba(234,243,236,0.35);border-radius:8px;padding:8px 12px;letter-spacing:0.04em;text-align:right;line-height:1.6;}
+  .folio b{color:var(--green-bright);font-weight:600;}
+  .hero-title{font-size:clamp(38px,7vw,74px);line-height:0.98;font-weight:700;max-width:900px;}
+  .hero-title em{font-style:normal;color:var(--green-bright);}
+  .hero-sub{margin-top:24px;max-width:560px;font-size:16.5px;line-height:1.6;color:var(--text-light-mute);}
+  .hero-meta{margin-top:40px;display:grid;grid-template-columns:repeat(4,auto);gap:32px;border-top:1px solid var(--line-light);padding-top:22px;}
+  @media (max-width:800px){ .hero-meta{grid-template-columns:repeat(2,1fr);} }
+  .hero-meta div{font-family:var(--font-mono);}
+  .hero-meta .k{font-size:10.5px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-light-mute);margin-bottom:6px;}
+  .hero-meta .v{font-size:14px;color:var(--text-light);font-weight:500;}
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:64px 0 76px;}
+  section + section{border-top:1px solid var(--line);margin-top:36px;}
+  .section-head{max-width:640px;margin-bottom:44px;padding-top:20px;}
+  .section-head .eyebrow{color:var(--green-mid);margin-bottom:16px;}
+  .section-head h2{font-size:clamp(24px,3.2vw,34px);font-weight:600;}
+  .section-head p{margin-top:12px;font-size:15px;line-height:1.62;color:var(--text-mute);}
+
+  /* ---------- STATS ROW ---------- */
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  @media (max-width:760px){ .stat-row{grid-template-columns:1fr;} }
+  .stat-card{background:var(--paper-2);padding:30px 28px;}
+  .stat-card .num{font-family:var(--font-display);font-weight:700;font-size:clamp(36px,4.6vw,50px);line-height:1;color:var(--ink);display:flex;align-items:baseline;gap:4px;}
+  .stat-card .num small{font-size:0.42em;font-weight:600;color:var(--green-mid);}
+  .stat-card .label{margin-top:10px;font-size:13px;color:var(--text-mute);}
+  .stat-card .sub{margin-top:2px;font-size:11.5px;color:#9aa89f;font-family:var(--font-mono);}
+  .stat-card.accent{background:var(--green-primary);color:#fff;}
+  .stat-card.accent .num{color:#fff;}
+  .stat-card.accent .num small{color:var(--ink);}
+  .stat-card.accent .label{color:rgba(255,255,255,0.85);}
+  .stat-card.accent .sub{color:rgba(255,255,255,0.6);}
+
+  /* ---------- BANCA (4 cards) ---------- */
+  .banca-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  @media (max-width:900px){ .banca-grid{grid-template-columns:repeat(2,1fr);} }
+  .banca-card{padding:24px 22px;background:var(--paper-2);}
+  .banca-card .btitle{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-mute);}
+  .banca-card .bnum{font-family:var(--font-display);font-size:32px;font-weight:700;margin-top:8px;}
+  .bar-track{height:8px;border-radius:5px;background:#e7ebe4;margin-top:14px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--green-mid),var(--green-primary));}
+  .bar-caption{margin-top:8px;font-size:12px;color:var(--text-mute);font-family:var(--font-mono);}
+  .bar-caption b{color:var(--ink);}
+  .banca-card.dim{background:#eef1ea;}
+  .banca-card.dim .bar-fill{background:#b7c2b3;}
+
+  /* ---------- PROMEDIO (simplificado) ---------- */
+  .avg-simple{display:flex;align-items:center;gap:28px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper-2);padding:32px 30px;}
+  @media (max-width:600px){ .avg-simple{flex-direction:column;align-items:flex-start;gap:10px;} }
+  .avg-simple .anum{font-family:var(--font-display);font-size:56px;font-weight:700;color:var(--green-mid);line-height:1;}
+  .avg-simple .adesc{font-size:14.5px;color:var(--text-mute);line-height:1.55;max-width:420px;}
+  .avg-simple .adesc b{color:var(--ink);}
+
+  /* ---------- CALIDAD ---------- */
+  .quality-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:700px){ .quality-grid{grid-template-columns:1fr;} }
+  .funnel-mini{border:1px solid var(--line);border-radius:var(--radius);padding:24px 24px;background:var(--paper-2);}
+  .fm-row{display:flex;align-items:center;gap:14px;margin-top:14px;}
+  .fm-row:first-of-type{margin-top:18px;}
+  .fm-bar{height:32px;border-radius:8px;background:linear-gradient(90deg,var(--green-mid),var(--green-primary));display:flex;align-items:center;padding:0 12px;color:#fff;font-family:var(--font-mono);font-size:12.5px;font-weight:600;}
+  .fm-label{width:100px;flex-shrink:0;font-size:12.5px;color:var(--text-mute);}
+  .fm-pct{width:52px;flex-shrink:0;text-align:right;font-family:var(--font-mono);font-size:12.5px;font-weight:600;color:var(--ink);}
+
+  /* ---------- CANAL: mini funnels ---------- */
+  .channel-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+  @media (max-width:1000px){ .channel-grid{grid-template-columns:repeat(3,1fr);} }
+  @media (max-width:640px){ .channel-grid{grid-template-columns:repeat(2,1fr);} }
+  .channel-card{border:1px solid var(--line);border-radius:12px;background:var(--paper-2);padding:18px 16px;display:flex;flex-direction:column;}
+  .channel-card .cc-name{font-family:var(--font-display);font-weight:600;font-size:13.5px;margin-bottom:14px;min-height:34px;}
+  .cc-stage{margin-bottom:10px;}
+  .cc-stage .cc-top{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:var(--text-mute);margin-bottom:4px;}
+  .cc-stage .cc-top b{color:var(--ink);font-size:13px;font-family:var(--font-body);font-weight:700;}
+  .cc-track{height:6px;border-radius:4px;background:#e7ebe4;overflow:hidden;}
+  .cc-fill{height:100%;border-radius:4px;background:var(--green-primary);}
+  .cc-arrow{text-align:center;font-family:var(--font-mono);font-size:10px;color:#9aa89f;margin:2px 0;}
+  .cc-badge{margin-top:auto;padding-top:12px;border-top:1px dashed var(--line);text-align:center;}
+  .cc-badge .bshare{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--green-mid);}
+  .cc-badge .blabel{font-family:var(--font-mono);font-size:9.5px;color:var(--text-mute);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px;line-height:1.3;}
+
+  .callout{margin-top:24px;border-radius:var(--radius);background:var(--ink);color:var(--text-light);padding:26px 28px;display:flex;gap:16px;align-items:flex-start;}
+  .callout .ci-ico{font-family:var(--font-mono);font-size:11px;background:var(--green-primary);color:#fff;border-radius:100px;padding:4px 10px;flex-shrink:0;margin-top:2px;}
+  .callout p{margin:0;font-size:14.5px;line-height:1.65;color:var(--text-light-mute);}
+  .callout p b{color:var(--text-light);font-weight:600;}
+
+  /* ---------- FUNNEL FULL ---------- */
+  .funnel-full{max-width:620px;margin:0 auto;}
+  .ff-stage{position:relative;margin:0 auto;text-align:center;padding:18px 22px;color:#fff;font-family:var(--font-display);font-weight:600;border-radius:10px;}
+  .ff-stage .n{font-size:28px;display:block;}
+  .ff-stage .l{font-family:var(--font-mono);font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:0.08em;opacity:0.85;margin-top:4px;}
+  .ff-drop{display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-mono);font-size:12px;color:var(--text-mute);padding:10px 0;}
+  .ff-drop .arrow{color:#c7d2cb;}
+  .ff-drop b{color:var(--ink);}
+
+  /* ---------- NPS simple ---------- */
+  .nps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  @media (max-width:700px){ .nps-row{grid-template-columns:1fr;} }
+  .nps-card{background:var(--paper-2);padding:30px 28px;text-align:center;}
+  .nps-card .nnum{font-family:var(--font-display);font-size:44px;font-weight:700;color:var(--ink);}
+  .nps-card.mainnps{background:var(--green-primary);color:#fff;}
+  .nps-card.mainnps .nnum{color:#fff;}
+  .nps-card .nlab{margin-top:8px;font-size:13px;color:var(--text-mute);}
+  .nps-card.mainnps .nlab{color:rgba(255,255,255,0.85);}
+
+  /* ---------- COSTO POR LEAD (sección propia) ---------- */
+  .cost-layout{display:grid;grid-template-columns:1.3fr 1fr;gap:22px;align-items:stretch;}
+  @media (max-width:800px){ .cost-layout{grid-template-columns:1fr;} }
+  .receipt{background:var(--ink);color:var(--text-light);border-radius:var(--radius);padding:30px 28px;font-family:var(--font-mono);position:relative;background-image:radial-gradient(circle,rgba(234,243,236,0.06) 1px,transparent 1px);background-size:14px 14px;}
+  .receipt .rtitle{font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-light-mute);margin-bottom:18px;}
+  .receipt .rline{display:flex;justify-content:space-between;font-size:13.5px;padding:9px 0;border-bottom:1px dashed var(--line-light);color:var(--text-light-mute);}
+  .receipt .rline b{color:var(--text-light);font-weight:500;}
+  .receipt .rtotal{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding-top:16px;border-top:1px solid var(--line-light);}
+  .receipt .rtotal .rl{font-size:13px;color:var(--text-light-mute);}
+  .receipt .rtotal .rv{font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--green-bright);}
+
+  .aside-card{border:1.5px dashed var(--green-mid);border-radius:var(--radius);background:#f2f8f3;padding:26px 24px;display:flex;flex-direction:column;justify-content:center;}
+  .aside-card .aside-eyebrow{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--green-mid);margin-bottom:10px;}
+  .aside-card .aside-title{font-family:var(--font-display);font-size:19px;font-weight:700;line-height:1.3;color:var(--ink);}
+  .aside-card .aside-sub{margin-top:10px;font-size:13px;color:var(--text-mute);line-height:1.5;}
+
+  /* ---------- CONCLUSIONES (max 4, cortas) ---------- */
+  .concl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  @media (max-width:760px){ .concl-grid{grid-template-columns:1fr;} }
+  .concl-card{background:var(--paper-2);padding:26px 26px;}
+  .concl-card .ci-tag{font-family:var(--font-mono);font-size:11px;color:var(--green-mid);border:1px solid var(--green-mid);border-radius:100px;height:24px;width:24px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+  .concl-card h4{font-family:var(--font-display);font-size:15.5px;font-weight:600;margin:0 0 8px;}
+  .concl-card p{margin:0;font-size:13.5px;line-height:1.6;color:var(--text-mute);}
+
+  /* ---------- CUALITATIVO ---------- */
+  .qual-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+  @media (max-width:820px){ .qual-grid{grid-template-columns:1fr;} }
+  .qual-col h3{font-family:var(--font-display);font-size:17px;font-weight:600;margin-bottom:4px;}
+  .qual-col .qsub{font-size:12.5px;color:var(--text-mute);margin-bottom:20px;}
+  .theme-bar{margin-bottom:13px;}
+  .theme-bar .th-top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px;}
+  .theme-bar .th-top .tname{font-weight:600;color:var(--ink);}
+  .theme-bar .th-top .tcount{font-family:var(--font-mono);color:var(--text-mute);}
+  .theme-track{height:7px;border-radius:5px;background:#e7ebe4;overflow:hidden;}
+  .theme-fill{height:100%;border-radius:5px;background:var(--green-primary);}
+  .qual-col.mejora .theme-fill{background:var(--green-mid);}
+  .quote-strip{margin-top:22px;display:flex;flex-direction:column;gap:11px;}
+  .quote{border-left:2px solid var(--green-primary);padding:3px 0 3px 15px;font-size:13px;line-height:1.5;color:var(--text-dark);font-style:italic;}
+  .quote span{display:block;margin-top:3px;font-family:var(--font-mono);font-style:normal;font-size:10px;color:var(--text-mute);}
+
+  footer{background:var(--ink);color:var(--text-light-mute);padding:52px 0 36px;}
+  footer .fwrap{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;}
+  footer .fbrand{font-family:var(--font-display);color:var(--text-light);font-size:16px;font-weight:600;}
+  footer .ftag{font-size:13px;margin-top:8px;max-width:340px;line-height:1.5;}
+  footer .fmeta{font-family:var(--font-mono);font-size:11px;text-align:right;line-height:1.8;}
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-top">
+      <div class="brandmark"><span class="sq"></span><span>INTERBANK</span></div>
+      <div class="folio">FOLIO N° <b>AQP‑260826</b><br>PROGRAMA DIGITAL PARA EMPRESAS</div>
+    </div>
+    <div class="eyebrow" style="color:var(--green-bright);margin-bottom:18px;">REPORTE DE CONVOCATORIA Y SATISFACCIÓN</div>
+    <h1 class="hero-title">Evento <em>Factoring</em> · SCF</h1>
+    <p class="hero-sub">Sesión presencial para clientes Banca Negocio y Banca Empresa de Interbank, en Arequipa. Un análisis de convocatoria, calidad de registros, canal de captación y satisfacción (NPS) de los asistentes.</p>
+    <div class="hero-meta">
+      <div><div class="k">Sede</div><div class="v">Hotel Costa del Sol, Arequipa</div></div>
+      <div><div class="k">Fecha</div><div class="v">26 de agosto de 2026</div></div>
+      <div><div class="k">Segmentos</div><div class="v">Banca Negocio · Banca Empresa</div></div>
+      <div><div class="k">Producto</div><div class="v">Factoring · Supply Chain Finance</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= RESUMEN ================= -->
+<section class="wrap">
+  <div class="section-head reveal">
+    <div class="eyebrow">01 · Resumen general</div>
+    <h2>Del registro a la sala</h2>
+    <p>337 empresas se registraron para el evento y 58 empresas asistieron. Eso equivale a un ratio de asistencia de 17,2%.</p>
+  </div>
+  <div class="stat-row reveal">
+    <div class="stat-card">
+      <div class="num" data-count="337">0</div>
+      <div class="label">Registros totales</div>
+      <div class="sub">empresas inscritas</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" data-count="58">0</div>
+      <div class="label">Asistentes</div>
+      <div class="sub">empresas que asistieron</div>
+    </div>
+    <div class="stat-card accent">
+      <div class="num" data-count="17.2" data-decimals="1"><small>%</small>0</div>
+      <div class="label">Ratio de asistencia</div>
+      <div class="sub">asistentes / registros</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BANCA ================= -->
+<section class="wrap">
+  <div class="section-head reveal">
+    <div class="eyebrow">02 · Asistencia según el segmento</div>
+    <h2>Quiénes llegaron a sala</h2>
+    <p>De los 58 asistentes, la mayoría pertenece a Banca Negocio. El % de cada barra representa su parte sobre el total de 58 asistentes.</p>
+  </div>
+  <div class="banca-grid reveal">
+    <div class="banca-card">
+      <div class="btitle">Banca Negocio</div>
+      <div class="bnum">37</div>
+      <div class="bar-track"><div class="bar-fill" style="width:63.8%"></div></div>
+      <div class="bar-caption"><b>63,8%</b> del total</div>
+    </div>
+    <div class="banca-card">
+      <div class="btitle">Banca Empresa</div>
+      <div class="bnum">10</div>
+      <div class="bar-track"><div class="bar-fill" style="width:17.2%"></div></div>
+      <div class="bar-caption"><b>17,2%</b> del total</div>
+    </div>
+    <div class="banca-card">
+      <div class="btitle">Banca Corporativa</div>
+      <div class="bnum">1</div>
+      <div class="bar-track"><div class="bar-fill" style="width:1.7%"></div></div>
+      <div class="bar-caption"><b>1,7%</b> del total</div>
+    </div>
+    <div class="banca-card dim">
+      <div class="btitle">No encontrado</div>
+      <div class="bnum">10</div>
+      <div class="bar-track"><div class="bar-fill" style="width:17.2%"></div></div>
+      <div class="bar-caption"><b>17,2%</b> del total</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROMEDIO POR EMPRESA (simplificado) ================= -->
+<section class="wrap">
+  <div class="section-head reveal">
+    <div class="eyebrow">03 · Promedio de asistencia por empresa</div>
+    <h2>Personas por empresa asistente</h2>
+  </div>
+  <div class="avg-simple reveal">
+    <div class="anum">1,53</div>
+    <div class="adesc">personas en promedio por cada una de las <b>58 empresas</b> asistentes (89 personas en total).</div>
+  </div>
+</section>
+
+<!-- ================= CALIDAD DE LA CONVOCATORIA ================= -->
+<section class="wrap">
+  <div class="section-head reveal">
+    <div class="eyebrow">04 · Calidad de la convocatoria</div>
+    <h2>No todo registro es un cliente apto</h2>
+    <p>De los 337 registros, 213 cumplieron el perfil (63,2%). De los 58 asistentes, 40 fueron aptos: 7 de cada 10 personas que llegaron a sala sí calzaban con el perfil buscado.</p>
+  </div>
+  <div class="quality-grid reveal">
+    <div class="funnel-mini">
+      <div class="btitle" style="font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-mute);">Registros</div>
+      <div class="fm-row"><div class="fm-label">Total</div><div class="fm-bar" style="width:100%;background:#d7ded4;color:var(--ink);">337</div></div>
+      <div class="fm-row"><div class="fm-label">Aptos</div><div class="fm-bar" style="width:63.2%;">213</div><div class="fm-pct">63,2%</div></div>
+    </div>
+    <div class="funnel-mini">
+      <div class="btitle" style="font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-mute);">Asistentes</div>
+      <div class="fm-row"><div class="fm-label">Total</div><div class="fm-bar" style="width:100%;background:#d7ded4;color:var(--ink);">58</div></div>
+      <div class="fm-row"><div class="fm-label">Aptos</div><div class="fm-bar" style="width:69%;">40</div><div class="fm-pct">69,0%</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CANAL DE CONVOCATORIA (mini funnels) ================= -->
+<section class="wrap">
+  <div class="section-head reveal">
+    <div class="eyebrow">05 · Canal de convocatoria</div>
+    <h2>El recorrido de cada canal, registro a registro</h2>
+    <p>Cada tarjeta muestra el embudo del canal: registros → aptos → aptos que asistieron. El número inferior es su aporte al total de 40 asistentes aptos.</p>
+  </div>
+
+  <div class="channel-grid reveal">
+    <!-- Bandeja personal -->
+    <div class="channel-card">
+      <div class="cc-name">Bandeja personal</div>
+      <div class="cc-stage"><div class="cc-top"><span>Registros</span><b>87</b></div><div class="cc-track"><div class="cc-fill" style="width:100%"></div></div></div>
+      <div class="cc-arrow">↓ 94,3% aptos</div>
+      <div class="cc-stage"><div class="cc-top"><span>Aptos</span><b>82</b></div><div class="cc-track"><div class="cc-fill" style="width:94.3%"></div></div></div>
+      <div class="cc-arrow">↓ 19,5% asistió</div>
+      <div class="cc-stage"><div class="cc-top"><span>Asistieron</span><b>16</b></div><div class="cc-track"><div class="cc-fill" style="width:18.4%"></div></div></div>
+      <div class="cc-badge"><div class="bshare">40%</div><div class="blabel">del total de<br>aptos‑asistentes</div></div>
+    </div>
+    <!-- HTML masivo -->
+    <div class="channel-card">
+      <div class="cc-name">HTML masivo</div>
+      <div class="cc-stage"><div class="cc-top"><span>Registros</span><b>58</b></div><div class="cc-track"><div class="cc-fill" style="width:100%"></div></div></div>
+      <div class="cc-arrow">↓ 65,5% aptos</div>
+      <div class="cc-stage"><div class="cc-top"><span>Aptos</span><b>38</b></div><div class="cc-track"><div class="cc-fill" style="width:65.5%"></div></div></div>
+      <div class="cc-arrow">↓ 13,2% asistió</div>
+      <div class="cc-stage"><div class="cc-top"><span>Asistieron</span><b>5</b></div><div class="cc-track"><div class="cc-fill" style="width:8.6%"></div></div></div>
+      <div class="cc-badge"><div class="bshare">12,5%</div><div class="blabel">del total de<br>aptos‑asistentes</div></div>
+    </div>
+    <!-- Paid Media -->
+    <div class="channel-card">
+      <div class="cc-name">Paid Media</div>
+      <div class="cc-stage"><div class="cc-top"><span>Registros</span><b>178</b></div><div class="cc-track"><div class="cc-fill" style="width:100%"></div></div></div>
+      <div class="cc-arrow">↓ 44,9% aptos</div>
+      <div class="cc-stage"><div class="cc-top"><span>Aptos</span><b>80</b></div><div class="cc-track"><div class="cc-fill" style="width:44.9%"></div></div></div>
+      <div class="cc-arrow">↓ 13,8% asistió</div>
+      <div class="cc-stage"><div class="cc-top"><span>Asistieron</span><b>11</b></div><div class="cc-track"><div class="cc-fill" style="width:6.2%"></div></div></div>
+      <div class="cc-badge"><div class="bshare">27,5%</div><div class="blabel">del total de<br>aptos‑asistentes</div></div>
+    </div>
+    <!-- Banca -->
+    <div class="channel-card">
+      <div class="cc-name">Banca</div>
+      <div class="cc-stage"><div class="cc-top"><span>Registros</span><b>6</b></div><div class="cc-track"><div class="cc-fill" style="width:100%"></div></div></div>
+      <div class="cc-arrow">↓ 100% aptos</div>
+      <div class="cc-stage"><div class="cc-top"><span>Aptos</span><b>6</b></div><div class="cc-track"><div class="cc-fill" style="width:100%"></div></div></div>
+      <div class="cc-arrow">↓ 50,0% asistió</div>
+      <div class="cc-stage"><div class="cc-top"><span>Asistieron</span><b>3</b></div><div class="cc-track"><div class="cc-fill" style="width:50%"></div></div></div>
+      <div class="cc-badge"><div class="bshare">7,5%</div><div class="blabel">del total de<br>aptos‑asistentes</div></div>
+    </div>
+    <!-- Referidos -->
+    <div class="channel-card">
+      <div class="cc-name">Referidos</div>
+      <div class="cc-stage"><div class="cc-top"><span>Registros</span><b>9</b></div><div class="cc-track"><div class="cc-fill" style="width:100%"></div></div></div>
+      <div class="cc-arrow">↓ 77,8% aptos</div>
+      <div class="cc-stage"><div class="cc-top"><span>Aptos</span><b>7</b></div><div class="cc-track"><div class="cc-fill" style="width:77.8%"></div></div></div>
+      <div class="cc-arrow">↓ 71,4% asistió</div>
+      <div class="cc-stage"><div class="cc-top"><span>Asistieron</span><b>5</b></div><div class="cc-track"><div class="cc-fill" style="width:55.6%"></div></div></div>
+      <div class="cc-badge"><div class="bshare">12,5%</div><div class="blabel">del total de<br>aptos‑asistentes</div></div>
+    </div>
+  </div>
+
+  <div class="callout reveal">
+    <span class="ci-ico">CONCLUSIÓN</span>
+    <p><b>Bandeja personal es el canal que mejor equilibra volumen y calidad:</b> con menos de la mitad de los registros de Paid Media, tuvo 94,3% de aptos y aportó el 40% de todos los asistentes aptos del evento. Paid Media trajo el mayor volumen (178 registros) pero la menor calidad (44,9% aptos) y conversión a sala. Referidos y Banca son chicos en volumen, pero los más eficientes: 71,4% y 50% de sus aptos llegaron a asistir.</p>
+  </div>
+</section>
+
+<!-- ================= FUNNEL GENERAL ================= -->
+<section class="wrap">
+  <div class="section-head reveal">
+    <div class="eyebrow">06 · Embudo de conversión</div>
+    <h2>De 337 registros a 7 sincronizaciones completas</h2>
+    <p>El mayor quiebre del embudo no está en la convocatoria, sino después del evento: de 40 empresas aptas que asistieron, solo 14 iniciaron sincronización y 7 la completaron.</p>
+  </div>
+  <div class="funnel-full reveal">
+    <div class="ff-stage" style="background:var(--ink);width:100%;"><span class="n">337</span><span class="l">Empresas registradas</span></div>
+    <div class="ff-drop"><span class="arrow">↓</span> asistieron <b>17,2%</b></div>
+    <div class="ff-stage" style="background:var(--green-deep);width:88%;"><span class="n">58</span><span class="l">Asistieron</span></div>
+    <div class="ff-drop"><span class="arrow">↓</span> resultaron aptas <b>69,0%</b></div>
+    <div class="ff-stage" style="background:var(--green-mid);width:74%;"><span class="n">40</span><span class="l">Aptas</span></div>
+    <div class="ff-drop"><span class="arrow">↓</span> iniciaron sincronización <b>35,0%</b></div>
+    <div class="ff-stage" style="background:var(--green-primary);width:52%;"><span class="n">14</span><span class="l">Sincronizaciones</span></div>
+    <div class="ff-drop"><span class="arrow">↓</span> completaron el proceso <b>50,0%</b></div>
+    <div class="ff-stage" style="background:var(--green-bright);color:var(--ink);width:34%;"><span class="n">7</span><span class="l">Sincronizaciones completas</span></div>
+  </div>
+</section>
+
+<!-- ================= NPS SIMPLE ================= -->
+<section class="wrap">
+  <div class="section-head reveal">
+    <div class="eyebrow">07 · Satisfacción (NPS)</div>
+    <h2>Un NPS alto, con una base de respuesta acotada</h2>
+    <p>El evento obtuvo un NPS de 83 sobre el total de 89 clientes. Solo 23 de ellos respondieron la encuesta — una tasa de respuesta de 26%.</p>
+  </div>
+  <div class="nps-row reveal">
+    <div class="nps-card mainnps"><div class="nnum">83</div><div class="nlab">NPS del evento</div></div>
+    <div class="nps-card"><div class="nnum">23 / 89</div><div class="nlab">clientes respondieron</div></div>
+    <div class="nps-card"><div class="nnum">26%</div><div class="nlab">tasa de respuesta</div></div>
+  </div>
+</section>
+
+<!-- ================= COSTO POR LEAD ================= -->
+<section class="wrap">
+  <div class="section-head reveal">
+    <div class="eyebrow">08 · Costo por lead</div>
+    <h2>Lo que costó cada empresa asistente</h2>
+  </div>
+  <div class="cost-layout reveal">
+    <div class="receipt">
+      <div class="rtitle">Cálculo</div>
+      <div class="rline"><span>Inversión total del evento</span><b>S/ 19.090,00</b></div>
+      <div class="rline" style="border-bottom:none;"><span>Empresas asistentes</span><b>58</b></div>
+      <div class="rtotal"><span class="rl">Costo por lead (asistente)</span><span class="rv">S/ 329,14</span></div>
+    </div>
+    <div class="aside-card">
+      <div class="aside-eyebrow">Base de registros</div>
+      <div class="aside-title">98,2% de los registros no eran clientes stock de FN — son nuevos</div>
+      <div class="aside-sub">331 de los 337 registros del evento corresponden a empresas fuera del stock de FN.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CUALITATIVO ================= -->
+<section class="wrap">
+  <div class="section-head reveal">
+    <div class="eyebrow">09 · La voz de los asistentes</div>
+    <h2>Qué dijeron, en sus propias palabras</h2>
+    <p>Se preguntó a los 23 clientes que respondieron la encuesta cuál fue la razón principal de su puntuación NPS, y qué se podría mejorar en futuros eventos.</p>
+  </div>
+
+  <div class="qual-grid reveal">
+    <div class="qual-col">
+      <h3>Por qué esa puntuación de NPS</h3>
+      <div class="qsub">23 respuestas agrupadas por tema</div>
+      <div class="theme-bar"><div class="th-top"><span class="tname">Formato y dinámica del evento</span><span class="tcount">7</span></div><div class="theme-track"><div class="theme-fill" style="width:30%"></div></div></div>
+      <div class="theme-bar"><div class="th-top"><span class="tname">Calidad de la información</span><span class="tcount">5</span></div><div class="theme-track"><div class="theme-fill" style="width:22%"></div></div></div>
+      <div class="theme-bar"><div class="th-top"><span class="tname">Expositor y ponencia</span><span class="tcount">5</span></div><div class="theme-track"><div class="theme-fill" style="width:22%"></div></div></div>
+      <div class="theme-bar"><div class="th-top"><span class="tname">Cercanía y networking</span><span class="tcount">4</span></div><div class="theme-track"><div class="theme-fill" style="width:17%"></div></div></div>
+      <div class="theme-bar"><div class="th-top"><span class="tname">Dudas / expectativa no cubierta</span><span class="tcount">2</span></div><div class="theme-track"><div class="theme-fill" style="width:9%"></div></div></div>
+      <div class="quote-strip">
+        <div class="quote">"La conversación fue muy interesante y llega a todos los perfiles en una empresa"<span>Sobre el formato</span></div>
+        <div class="quote">"Buena información sobre la obtención de liquidez"<span>Sobre la información</span></div>
+        <div class="quote">"Me encantan los foros. Cercanía crea confianza"<span>Sobre networking</span></div>
+        <div class="quote">"Aún tengo dudas sobre el producto"<span>Punto de mejora</span></div>
+      </div>
+    </div>
+    <div class="qual-col mejora">
+      <h3>Qué mejorar en próximos eventos</h3>
+      <div class="qsub">18 respuestas agrupadas por tema</div>
+      <div class="theme-bar"><div class="th-top"><span class="tname">Sin cambios, todo bien</span><span class="tcount">7</span></div><div class="theme-track"><div class="theme-fill" style="width:39%"></div></div></div>
+      <div class="theme-bar"><div class="th-top"><span class="tname">Más contenido y profundidad</span><span class="tcount">4</span></div><div class="theme-track"><div class="theme-fill" style="width:22%"></div></div></div>
+      <div class="theme-bar"><div class="th-top"><span class="tname">Formato y tiempo</span><span class="tcount">4</span></div><div class="theme-track"><div class="theme-fill" style="width:22%"></div></div></div>
+      <div class="theme-bar"><div class="th-top"><span class="tname">Logística y fechas</span><span class="tcount">1</span></div><div class="theme-track"><div class="theme-fill" style="width:6%"></div></div></div>
+      <div class="theme-bar"><div class="th-top"><span class="tname">Invitados / expositores</span><span class="tcount">1</span></div><div class="theme-track"><div class="theme-fill" style="width:6%"></div></div></div>
+      <div class="theme-bar"><div class="th-top"><span class="tname">Otros productos (contratos)</span><span class="tcount">1</span></div><div class="theme-track"><div class="theme-fill" style="width:6%"></div></div></div>
+      <div class="quote-strip">
+        <div class="quote">"Difundir más información de los productos de Interbank"<span>Contenido</span></div>
+        <div class="quote">"Ser puntuales, iniciar a la hora que debe iniciar sin importar si hay o no aforo, es la única manera de progresar"<span>Formato y puntualidad</span></div>
+        <div class="quote">"No poner en fechas de cierre de mes y/o festivas, en este caso el aniversario de Arequipa"<span>Logística</span></div>
+        <div class="quote">"Seguir trayendo a invitados como el del día de hoy"<span>Expositores</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap fwrap">
+    <div>
+      <div class="fbrand">INTERBANK</div>
+      <div class="ftag">Reporte de convocatoria y satisfacción · Evento Factoring · SCF</div>
+    </div>
+    <div class="fmeta">
+      Hotel Costa del Sol, Arequipa<br>
+      26 de agosto de 2026<br>
+      Banca Negocio · Banca Empresa
+    </div>
+  </div>
+</footer>
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{threshold:0.1});
+  revealEls.forEach(el=>io.observe(el));
+
+  function animateCount(el){
+    const target = parseFloat(el.dataset.count);
+    const decimals = parseInt(el.dataset.decimals || '0');
+    const hasSmall = el.querySelector('small');
+    const duration = 1000;
+    const start = performance.now();
+    function frame(now){
+      const p = Math.min((now-start)/duration,1);
+      const eased = 1 - Math.pow(1-p,3);
+      const val = target*eased;
+      const text = decimals>0 ? val.toFixed(decimals) : Math.round(val).toString();
+      if(!hasSmall){ el.textContent = text.replace('.',','); }
+      else { el.innerHTML = '<small>%</small>' + text.replace('.',','); }
+      if(p<1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  const countEls = document.querySelectorAll('[data-count]');
+  const io2 = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ animateCount(e.target); io2.unobserve(e.target); } });
+  },{threshold:0.4});
+  countEls.forEach(el=>io2.observe(el));
+</script>
+
+</body>
+</html>
